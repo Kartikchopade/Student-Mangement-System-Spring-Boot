@@ -3,6 +3,9 @@ package com.example.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.entity.Student;
@@ -14,6 +17,7 @@ public class StudentServiceImpl implements StudentService
 {
 	@Autowired
 	private StudentRepository studentRepository;
+	
 	
 	
 	
@@ -61,5 +65,13 @@ public class StudentServiceImpl implements StudentService
 	public void deleteStudentById(Long id) {
 		// TODO Auto-generated method stub
 		studentRepository.deleteById(id);
+	}
+
+
+
+	@Override
+	public Page<Student> findPaginated(int pageNo, int pageSize) {
+	 Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+	 return this.studentRepository.findAll(pageable);
 	}
 }

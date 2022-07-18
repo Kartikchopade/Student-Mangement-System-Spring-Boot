@@ -1,5 +1,8 @@
 package com.example.controller;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -23,8 +26,8 @@ public class StudentController
 	@GetMapping("students")
 	public String listStudents(Model model)
 	{
-		model.addAttribute("students",studentService.getAllStudents());
-		return"students";
+		//model.addAttribute("students",studentService.getAllStudents());		
+		return findPaginated(1,model);
 	}
 	
 	@GetMapping("/students/new")
@@ -35,6 +38,17 @@ public class StudentController
 		return "create_student";
 		
 	}
+	
+	@GetMapping("page/students/new")
+	public String createStudent(Model model)
+	{
+		Student student=new Student();
+		model.addAttribute("student",student);
+		return "create_student";
+		
+	}
+	
+	
 	
 	@PostMapping("/students")
 	public String saveStudent(@ModelAttribute("student") Student student)
@@ -73,6 +87,20 @@ public class StudentController
 	{
 		studentService.deleteStudentById(id);
 		return "redirect:/students";
+	}	
+	
+	@GetMapping("/page/{pageNo}")
+	public String findPaginated(@PathVariable(value = "pageNo") int pageNo, Model model) {
+	    int pageSize = 5;
+
+	    Page <Student> page = studentService.findPaginated(pageNo, pageSize);
+	    List <Student> listStudents = page.getContent();
+
+	    model.addAttribute("currentPage", pageNo);
+	    model.addAttribute("totalPages", page.getTotalPages());
+	    model.addAttribute("totalItems", page.getTotalElements());
+	    model.addAttribute("students", listStudents);
+	    return "students";
 	}
 	
 }
